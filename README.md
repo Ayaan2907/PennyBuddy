@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+
+```markdown
+# PennyBuddy
+
+PennyBuddy is a finance management web application built with **Next.js** 13 using the `app` directory structure. It allows users to manage their finances with ease, featuring account creation, login, and more.
+
+## Features
+- User Registration and Authentication
+- Finance management tools (to be expanded)
+- Responsive design using Tailwind CSS
+
+## Technologies Used
+- [Next.js](https://nextjs.org/) 13
+- [React](https://reactjs.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Node.js](https://nodejs.org/)
 
 ## Getting Started
 
-First, run the development server:
+Follow the instructions below to set up and run the project locally.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### Prerequisites
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Make sure you have the following installed on your local machine:
+- **Node.js** (v14.17.0 or higher)
+- **npm** (v6 or higher) or **yarn**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Installation
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. **Clone the repository**:
+   ```bash
+   git clone 'url'
+   ```
 
-## Learn More
+2. **Navigate to the project directory**:
+   ```bash
+   cd pennybuddy
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+3. **Install dependencies**:
+   You can either use `npm` or `yarn` to install the required dependencies:
+   ```bash
+   # Using npm
+   npm install
+   
+   # OR using yarn
+   yarn install
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Running the Project
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. **Start the development server**:
+   After installing the dependencies, run the following command to start the Next.js development server:
+   ```bash
+   # Using npm
+   npm run dev
 
-## Deploy on Vercel
+   # OR using yarn
+   yarn dev
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+2. **Open the application**:
+   Once the server is running, open your browser and navigate to:
+   ```
+   http://localhost:3000
+   ```
