@@ -1,162 +1,127 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
-
-interface AuthPageProps {
-  isLogin: boolean; 
-}
+import { registerUser, loginUser } from '../../services/authService';
+import { initialFormData, AuthPageProps } from '../../models/authFormModel';
+import { useAuth } from "@/app/context/AuthContext";
 
 export default function AuthPage({ isLogin: initialIsLogin }: AuthPageProps) {
-  const router = useRouter(); 
-  const [isLogin, setIsLogin] = useState(initialIsLogin);
+  const { login } = useAuth();
+  const router = useRouter();
+  const [isLoggedIn, setIsLogin] = useState(initialIsLogin);
+
+  const [formData, setFormData] = useState(initialFormData);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!formData.email || !formData.password || (!isLoggedIn && (!formData.firstName || !formData.lastName))) {
+      setError("Please fill in all required fields.");
+      return;
+    }
+
+    try {
+      if (isLoggedIn) {
+        const response = await loginUser({ email: formData.email, password: formData.password });
+        if (response.access_token) {
+          login();
+          router.push("/route/dashboard");
+        } else {
+          setError("Invalid credentials.");
+        }
+      } else {
+        const response = await registerUser(formData);
+        if (response.firstName) {
+          router.push("/route/login");
+        }
+      }
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
+  const renderInputField = (label: string, name: string, type: string = "text", isRequired: boolean = false) => (
+    <div className="mb-4">
+      <label className="block text-sm font-medium text-gray-700">
+        {label} {isRequired && <span className="text-red-500">*</span>}
+      </label>
+      <input
+        type={type}
+        name={name}
+        placeholder={`Enter your ${label.toLowerCase()}`}
+        value={formData[name as keyof typeof formData]}
+        onChange={handleChange}
+        className="mt-1 p-3 block w-full border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 text-gray-800"
+      />
+    </div>
+  );
 
   return (
     <div className="bg-gray-50 min-h-screen flex flex-col overflow-hidden">
-      <div className="flex flex-grow overflow-hidden">        
+      <div className="flex flex-grow overflow-hidden">
         <div className="w-full md:w-1/2 flex justify-center items-center p-8">
           <div className="w-full max-w-lg bg-white p-6 rounded-lg shadow-lg relative">
-          <div className="absolute -top-10 left-1/2 transform -translate-x-1/2">
-              <div
-                className="stylish-text cursor-pointer"
-                onClick={() => router.push("/")}
-              >
+            <div className="absolute -top-10 left-1/2 transform -translate-x-1/2">
+              <div className="stylish-text cursor-pointer" onClick={() => router.push("/")}>
                 PennyBuddy
               </div>
             </div>
 
-
             <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
-              {isLogin ? "Sign In" : "Sign Up"}
+              {isLoggedIn ? "Sign In" : "Sign Up"}
             </h2>
-            <form>
-              {!isLogin && (
+
+            {error && <p className="text-red-500 text-center">{error}</p>}
+
+            <form onSubmit={handleSubmit}>
+              {!isLoggedIn && (
                 <>
                   <div className="flex space-x-4 mb-4">
-                    <div className="w-1/2">
-                      <label className="block text-sm font-medium text-gray-700">
-                        First Name
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="Enter your first name"
-                        className="mt-1 p-3 block w-full border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
-                      />
-                    </div>
-                    <div className="w-1/2">
-                      <label className="block text-sm font-medium text-gray-700">
-                        Last Name
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="Enter your last name"
-                        className="mt-1 p-3 block w-full border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
-                      />
-                    </div>
+                    {renderInputField("First Name", "firstName", "text", true)}
+                    {renderInputField("Last Name", "lastName", "text", true)}
                   </div>
-
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700">
-                      Address
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Enter your specific address"
-                      className="mt-1 p-3 block w-full border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
-                    />
+                  {renderInputField("Address", "address")}
+                  <div className="flex space-x-4">
+                    {renderInputField("City", "city")}
+                    {renderInputField("State", "state", "text", false)}
                   </div>
-
-                  <div className="flex space-x-4 mb-4">
-                    <div className="w-1/2">
-                      <label className="block text-sm font-medium text-gray-700">
-                        City
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="Enter your city"
-                        className="mt-1 p-3 block w-full border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
-                      />
-                    </div>
-                    <div className="w-1/2">
-                      <label className="block text-sm font-medium text-gray-700">
-                        State
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="Example: NY"
-                        className="mt-1 p-3 block w-full border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
-                      />
-                    </div>
-                    
-                  </div>
-
-                  <div className="flex space-x-4 mb-4">
-                  <div className="w-1/2">
-                      <label className="block text-sm font-medium text-gray-700">
-                        Postal Code
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="Example: 11101"
-                        className="mt-1 p-3 block w-full border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
-                      />
-                    </div>
-                    <div className="w-1/2">
-                      <label className="block text-sm font-medium text-gray-700">
-                        SSN
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="Example: 1234"
-                        className="mt-1 p-3 block w-full border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
-                      />
-                    </div>
+                  <div className="flex space-x-4">
+                    {renderInputField("Postal Code", "postalCode", "text", false)}
+                    {renderInputField("SSN", "ssn", "text", false)}
                   </div>
                 </>
               )}
-
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  className="mt-1 p-3 block w-full border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
-                />
-              </div>
-
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700">
-                  Password
-                </label>
-                <input
-                  type="password"
-                  placeholder="Enter your password"
-                  className="mt-1 p-3 block w-full border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
-                />
-              </div>
+              {renderInputField("Email Address", "email", "email", true)}
+              {renderInputField("Password", "password", "password", true)}
 
               <button
                 type="submit"
                 className="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition-all duration-300"
               >
-                {isLogin ? "Sign In" : "Sign Up"}
+                {isLoggedIn ? "Sign In" : "Sign Up"}
               </button>
             </form>
 
             <p className="mt-6 text-center text-gray-600">
-              {isLogin ? (
+              {isLoggedIn ? (
                 <>
                   Don’t have an account?{" "}
-                  <a href="/auth/register" className="text-indigo-600 hover:underline">
+                  <a href="/route/register" className="text-indigo-600 hover:underline">
                     Sign up
                   </a>
                 </>
               ) : (
                 <>
                   Already have an account?{" "}
-                  <a href="/auth/login" className="text-indigo-600 hover:underline">
+                  <a href="/route/login" className="text-indigo-600 hover:underline">
                     Sign In
                   </a>
                 </>

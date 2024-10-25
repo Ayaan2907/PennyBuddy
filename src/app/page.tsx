@@ -16,7 +16,7 @@ export default function Home() {
           </p>
           
           <div className="mt-8 flex space-x-4">
-            <Link href="/auth/register">
+            <Link href="/router/register">
               <span className="bg-blue-600 text-white py-3 px-6 rounded-md shadow hover:bg-blue-500">
                 Get started
               </span>
