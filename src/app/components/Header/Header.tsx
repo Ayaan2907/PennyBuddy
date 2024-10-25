@@ -1,22 +1,28 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/context/AuthContext";
+
+interface AuthPageProps {
+  isLogin: boolean;
+}
 
 const Header = () => {
   const router = useRouter();
-  const [isLoggedIn, setIsLoggedIn] = useState(false); 
+  const { isLoggedIn, logout } = useAuth();
 
   const handleLogin = () => {
-    router.push("/auth/login");
+    router.push("/route/login");
   };
 
   const handleRegister = () => {
-    router.push("/auth/register");
+    router.push("/route/register");
   };
 
   const handleLogout = () => {
-    setIsLoggedIn(false); 
-  };
+    logout();
+    router.push("/")
+  }
 
   return (
     <header className="bg-gray-900 text-white py-4 px-8">
@@ -28,21 +34,30 @@ const Header = () => {
           {!isLoggedIn ? (
             <>
               <li>
-                <a href="#" onClick={handleLogin} className="hover:underline">
+                <button
+                  onClick={handleLogin}
+                  className="hover:underline cursor-pointer"
+                >
                   Login
-                </a>
+                </button>
               </li>
               <li>
-                <a href="#" onClick={handleRegister} className="hover:underline">
+                <button
+                  onClick={handleRegister}
+                  className="hover:underline cursor-pointer"
+                >
                   Register
-                </a>
+                </button>
               </li>
             </>
           ) : (
             <li>
-              <a href="#" onClick={handleLogout} className="hover:underline">
+              <button
+                onClick={handleLogout}
+                className="hover:underline cursor-pointer"
+              >
                 Sign Out
-              </a>
+              </button>
             </li>
           )}
         </ul>
@@ -52,4 +67,3 @@ const Header = () => {
 };
 
 export default Header;
-

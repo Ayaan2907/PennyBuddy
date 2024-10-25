@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import Header from './components/Header/Header';
+import { AuthProvider } from '../app/context/AuthContext';
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -16,7 +17,7 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   title: "Penny Buddy",
-  description: "Financial  tracking and budgeting app",
+  description: "Financial tracking and budgeting app",
 };
 
 export default function RootLayout({
@@ -29,8 +30,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {/* <Header /> */}
-        {children}
+        <AuthProvider>
+          {/* <Header /> Now the Header has access to AuthContext */}
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );
