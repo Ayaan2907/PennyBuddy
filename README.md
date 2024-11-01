@@ -1,5 +1,3 @@
-
-```markdown
 # PennyBuddy
 
 PennyBuddy is a finance management web application built with **Next.js** 13 using the `app` directory structure. It allows users to manage their finances with ease, featuring account creation, login, and more.
@@ -65,3 +63,4 @@ Make sure you have the following installed on your local machine:
    ```
    http://localhost:3000
    ```
+
