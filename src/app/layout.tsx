@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import Header from './components/Header/Header';
 import { AuthProvider } from '../app/context/AuthContext';
+import { MantineProvider } from "@mantine/core";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -30,10 +31,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <MantineProvider >
         <AuthProvider>
-          {/* <Header /> Now the Header has access to AuthContext */}
           {children}
         </AuthProvider>
+        </MantineProvider>
       </body>
     </html>
   );

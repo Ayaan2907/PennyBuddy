@@ -1,6 +1,7 @@
 // src/services/authService.ts
 import axios from 'axios';
 
+
 const API_URL = 'http://localhost:3003/auth';
 
 export const registerUser = async (userData: any) => {
