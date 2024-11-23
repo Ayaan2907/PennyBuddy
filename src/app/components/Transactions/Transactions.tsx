@@ -1,3 +1,5 @@
+"use client";
+
 import Link from 'next/link';
 import Navbar from '../Navbar/Navbar';
 import { useState } from 'react';
@@ -15,6 +17,7 @@ export default function Transactions() {
   return (
     <div className="bg-gray-50 min-h-screen">
     < Navbar  isOpen={isOpen} toggle={() => setIsOpen(!isOpen)} />
+    <div className="pt-20">
       <section className="container mx-auto px-6 py-16 flex flex-col items-center">
         <h1 className="text-5xl font-bold text-gray-900 mb-4">Transactions</h1>
         <p className="text-lg text-gray-600 mb-8">Review all your recent transactions below.</p>
@@ -47,6 +50,7 @@ export default function Transactions() {
           </table>
         </div>
       </section>
+      </div>
     </div>
   );
 }
