@@ -6,7 +6,7 @@ export const exchangePlaidToken = async (publicToken: string) => {
             body: JSON.stringify({ public_token: publicToken }),
         });
         const data = await response.json();
-        return data;
+        return data.access_token.accessToken;
     } catch (error) {
         console.error("Error exchanging public token:", error);
         throw error;
@@ -15,7 +15,6 @@ export const exchangePlaidToken = async (publicToken: string) => {
 
 export const extractAccountsMetadata = (metadata: any) => {
     if (metadata.accounts && metadata.accounts.length > 0) {
-        console.log(metadata);
         return metadata.accounts.map((account: any) => ({
             accountName: account.name,
             institutionName: metadata.institution?.name || "Unknown",
@@ -27,27 +26,15 @@ export const extractAccountsMetadata = (metadata: any) => {
     }
 };
 
-export const sendPlaidMetadataToBackend = async (metadata: any) => {
+export const sendPlaidMetadataToBackend = async (metadata: any, userId:any | null, accessToken:any) => {
     if (metadata.accounts && metadata.accounts.length > 0 && metadata.institution) {
-        const formattedData = {
-            accounts: metadata.accounts.map((account: any) => {
-                const { id, ...rest } = account;
-                return {
-                    ...rest,
-                    account_id: id, 
-                    institution_name: metadata.institution.name,
-                    institution_id: metadata.institution.institution_id,
-                };
-            }),
-        };
-        
         try {
-            const response = await fetch("http://localhost:3003/plaid/metadata", {
+            const response = await fetch("http://localhost:3003/plaid/transactions", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(formattedData),
+                body: JSON.stringify({userId: userId, access_token:accessToken}),
             });
 
             if (!response.ok) {

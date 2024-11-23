@@ -33,6 +33,7 @@ export default function AuthPage({ isLogin: initialIsLogin }: AuthPageProps) {
         const response = await loginUser({ email: formData.email, password: formData.password });
         if (response.accessToken) {
           localStorage.setItem("plaidAccessToken",response.plaidAccessToken);
+          localStorage.setItem("userId",response.id);
           login();
           router.push("/route/dashboard");
         } else {
