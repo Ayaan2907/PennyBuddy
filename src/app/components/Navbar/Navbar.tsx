@@ -3,10 +3,12 @@
 import Link from 'next/link';
 import { usePlaidLinkHandler } from '../../hooks/usePlaidLinkHandler';
 import { useEffect, useState } from 'react';
+import { useAuth } from "@/app/context/AuthContext";
 
 export default function Navbar({ isOpen, toggle }: { isOpen: boolean; toggle: () => void }) {
   const [linkToken, setLinkToken] = useState<string | null>(null);
   const { open, ready } = usePlaidLinkHandler(linkToken);
+  const { logout } = useAuth();
 
   useEffect(() => {
     const fetchLinkToken = async () => {
@@ -28,6 +30,10 @@ export default function Navbar({ isOpen, toggle }: { isOpen: boolean; toggle: ()
       console.error('Plaid Link is not ready');
     }
   };
+
+  const handleLogout = () => {
+    logout(); 
+  }
 
   return (
     <nav className="bg-black shadow-lg text-white fixed w-full z-10 top-0 left-0">
@@ -64,6 +70,15 @@ export default function Navbar({ isOpen, toggle }: { isOpen: boolean; toggle: ()
           <li>
             <Link href="/route/transactions" className="hover:text-gray-400">
               Transactions
+            </Link>
+          </li>
+          <li>
+            <Link href="/">
+              <button
+                onClick={handleLogout}
+                className="text-white-500 hover:text-gray-400">
+                  Logout
+              </button>
             </Link>
           </li>
         </ul>
