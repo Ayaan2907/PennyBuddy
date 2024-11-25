@@ -34,6 +34,40 @@ const CONSTANT_CHIP_COLOR_PALLET = [
 	"bg-fuchsia-100 text-fuchsia-800",
 	"bg-rose-100 text-rose-800",
 	"bg-sky-100 text-sky-800",
+	"bg-violet-100 text-violet-800",
+	"bg-rose-200 text-rose-900",
+	"bg-amber-200 text-amber-900",
+	"bg-lime-200 text-lime-900",
+	"bg-teal-200 text-teal-900",
+	"bg-cyan-200 text-cyan-900",
+	"bg-sky-200 text-sky-900",
+	"bg-indigo-200 text-indigo-900",
+	"bg-purple-200 text-purple-900",
+	"bg-pink-200 text-pink-900",
+];
+
+export const tailwindToRgbColors: string[] = [
+	"rgb(219, 234, 254)",
+	"rgb(220, 252, 231)",
+	"rgb(254, 243, 199)",
+	"rgb(254, 226, 226)",
+	"rgb(224, 231, 255)",
+	"rgb(243, 232, 255)",
+	"rgb(252, 231, 243)",
+	"rgb(204, 251, 241)",
+	"rgb(255, 237, 213)",
+	"rgb(207, 250, 254)",
+	"rgb(240, 253, 244)",
+	"rgb(255, 251, 235)",
+	"rgb(209, 250, 229)",
+	"rgb(250, 232, 255)",
+	"rgb(255, 228, 230)",
+	"rgb(224, 242, 254)",
+	"rgb(233, 213, 255)",
+	"rgb(254, 205, 211)",
+	"rgb(255, 237, 213)",
+	"rgb(240, 253, 244)",
+	"rgb(204, 251, 241)",
 ];
 
 
@@ -67,9 +101,20 @@ export interface AccountBalance {
 	institution: string;
 	// account_id: string;
 }
-  
+
 export interface UIModelProps {
 	transaction?: TransactionObject;  // Transaction data
 	account?: AccountBalance;      // Account data
 	onClose: () => void;  // Function to close the modal
+}
+
+
+
+// chart props 
+export interface PieChartProps {
+	transactions: TransactionObject[];
+}
+
+export interface BarChartProps {
+	accounts: AccountBalance[];
 }
