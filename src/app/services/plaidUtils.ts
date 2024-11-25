@@ -72,14 +72,14 @@ export const fetchAccountTransactionsFromDB = async (userId: any) => {
 
 export const fetchAccountBalancesFromDB = async (userId: any) => {
     try {
-        const response = await fetch(`http://localhost:3003//plaid/gets-balances/${userId}`, {
+        const response = await fetch(`http://localhost:3003/plaid/gets-balances/${userId}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
             },
         });
         const data = await response.json();
-        return data.balances;
+        return data;
     } catch (error) {
         console.error("Error fetching account balances:", error);
         throw error;
