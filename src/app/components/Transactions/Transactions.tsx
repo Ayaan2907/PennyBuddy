@@ -36,7 +36,7 @@ export default function Transactions() {
 				setTransactions(transformedData);
 				console.log("Fetched transactions:", transformedData);
 
-				const categoryMap = getCategoryColorMap(data);
+				const categoryMap = getCategoryColorMap(transformedData);
 				setCategoryColorMap(categoryMap);
 			} catch (error) {
 				console.error("Failed to fetch transactions:", error);
