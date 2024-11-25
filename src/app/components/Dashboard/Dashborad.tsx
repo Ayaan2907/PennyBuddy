@@ -1,22 +1,51 @@
 "use client";
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Navbar from '../Navbar/Navbar';
+import { fetchAccountBalancesFromDB, fetchAccountTransactionsFromDB } from '@/app/services/plaidUtils';
+import { TransactionObject, getCategoryColorMap, AccountBalance } from "@/app/models/transactionUtils";
+import CustomeTable from '@/app/components/Table/CustomeTable';
+import { UIModel } from '@/app/components/UIModel/UIModel';
 
 export default function Dashboard() {
   const [isOpen, setIsOpen] = useState(false);
+  const [categoryColorMap, setCategoryColorMap] = useState<Record<string, string>>({});
+  const [accounts, setAccounts] = useState<AccountBalance[]>([]);
+  const [transactions, setTransactions] = useState<TransactionObject[]>([]);
+  const [selectedAccount, setSelectedAccount] = useState<AccountBalance | null>(null);
 
-  const accounts = [
-    { id: 1, name: 'Savings', number: '1234', type: 'Savings', balance: '5,000' },
-    { id: 2, name: 'Credit Card', number: '5678', type: 'Credit', balance: '-1,200' },
-  ];
 
-  const transactions = [
-    { id: 1, name: 'Groceries', date: '2024-11-01', amount: '-50.00' },
-    { id: 2, name: 'Salary', date: '2024-11-02', amount: '2,000.00' },
-    { id: 3, name: 'Utilities', date: '2024-11-03', amount: '-100.00' },
-  ];
+  const openAccountModal = (account: AccountBalance) => setSelectedAccount(account);
+  const closeAccountModal = () => setSelectedAccount(null);
+
+
+  useEffect(() => {
+    const userId = localStorage.getItem('userId');
+    if (!userId) return;
+    (async () => {
+      const userId = localStorage.getItem("userId");
+      if (!userId) return;
+
+
+      const balances = await fetchAccountBalancesFromDB(userId);
+      setAccounts(balances);
+      console.log("Fetched balances on dashboard", balances);
+
+
+      const data = await fetchAccountTransactionsFromDB(userId);
+      const transformedData = data.map((transaction: TransactionObject) => ({
+        ...transaction,
+        amount: Number(transaction.amount),
+        category: typeof transaction.category === 'string' ? transaction.category.split(/,\s*|\s*,\s*|\s*,/) : transaction.category,
+      }));
+      setTransactions(transformedData.slice(0, 3));
+      console.log("Fetched transactions on dashboard");
+      const categoryMap = getCategoryColorMap(data);
+      setCategoryColorMap(categoryMap);
+    })();
+
+  }, []);
 
   return (
     <div className="bg-gradient-to-br from-blue-50 to-white min-h-screen font-sans text-gray-800">
@@ -28,52 +57,75 @@ export default function Dashboard() {
           <p className="mt-4 text-xl text-gray-600">Your comprehensive financial management platform.</p>
         </section>
 
-        <section className="py-16 bg-white shadow-inner rounded-lg">
+        <section className="py-16 bg-gray-50 shadow-inner rounded-lg">
           <div className="container mx-auto px-6">
-            <h2 className="text-4xl font-semibold text-gray-800 mb-8 text-center">Accounts</h2>
+            <h2 className="text-4xl font-semibold text-gray-800 mb-12 text-center">Accounts</h2>
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {accounts.map(account => (
+              {accounts.map((account) => (
                 <div
-                  key={account.id}
-                  className="bg-gradient-to-br from-blue-100 to-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
+                  key={account.user_id + account.subtype + account.b_current_balance + account.b_available_balance}
+                  // FIXME: need accound_id to be unique from BE. for now doing it this way
+
+                  className="bg-gradient-to-br from-blue-50 to-white p-6 rounded-2xl shadow-xl hover:scale-105 transition-transform duration-300 ease-in-out flex flex-col justify-between transform hover:shadow-2xl"
+                  onClick={() => openAccountModal(account)}
                 >
-                  <h3 className="text-lg font-semibold text-blue-700">
-                    {account.name} - ****{account.number.slice(-4)}
-                  </h3>
-                  <p className="text-gray-600">{account.type}</p>
-                  <p className="text-2xl font-bold text-blue-900 mt-2">${account.balance}</p>
-                  <Link href={`/accounts/${account.id}`} className="text-blue-600 hover:text-blue-700 mt-4 block">View Details</Link>
+                  {/* Account Header */}
+                  <div className="space-y-2">
+                    <h3 className="text-xl font-semibold text-blue-700 truncate">
+                      {account.institution} - {account.subtype.charAt(0).toUpperCase() + account.subtype.slice(1)}
+                    </h3>
+                    <p className="text-sm text-gray-500 capitalize">{account.type}</p>
+                  </div>
+
+                  {/* Balance and Currency */}
+                  <div className="mt-6 space-y-4">
+                    {/* Available Balance */}
+                    <div className="flex justify-between items-center">
+                      <p className="text-sm text-gray-500">Available Balance</p>
+                      <p className="text-2xl font-bold text-green-600">
+                        ${account.b_available_balance || 'N/A'}
+                      </p>
+                    </div>
+                    {/* Current Balance */}
+                    <div className="flex justify-between items-center">
+                      <p className="text-sm text-gray-500">Current Balance</p>
+                      <p className="text-2xl font-bold text-blue-900">
+                        ${account.b_current_balance}
+                      </p>
+                    </div>
+                    {/* Currency */}
+                    <div className="flex justify-between items-center">
+                      <p className="text-sm text-gray-500">Currency</p>
+                      <p className="text-lg font-medium text-gray-700">{account.b_currency}</p>
+                    </div>
+                  </div>
+
+                  {/* View Details Button */}
                 </div>
               ))}
             </div>
           </div>
+
+          {/* Modal for Account Details */}
+          {selectedAccount && (
+            <UIModel
+              account={selectedAccount}
+              onClose={closeAccountModal}
+            />
+          )}
         </section>
 
         <section className="py-16 bg-gray-50 shadow-inner rounded-lg">
           <div className="container mx-auto px-6">
             <h2 className="text-4xl font-semibold text-gray-800 mb-8 text-center">Recent Transactions</h2>
             <div className="overflow-x-auto bg-gray-100 p-6 rounded-lg shadow-lg">
-              <table className="min-w-full text-left text-gray-700">
-                <thead className="border-b bg-gray-200">
-                  <tr>
-                    <th className="px-4 py-3">Transaction</th>
-                    <th className="px-4 py-3">Date</th>
-                    <th className="px-4 py-3">Amount</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {transactions.slice(0, 5).map(transaction => (
-                    <tr key={transaction.id} className="border-b hover:bg-blue-50 transition-colors duration-150">
-                      <td className="px-4 py-3">{transaction.name}</td>
-                      <td className="px-4 py-3">{transaction.date}</td>
-                      <td className={`px-4 py-3 text-right ${transaction.amount.startsWith('-') ? 'text-red-600' : 'text-green-600'}`}>
-                        ${transaction.amount}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              <Link href="/transactions" className="text-blue-600 hover:text-blue-700 mt-4 block text-center">View All Transactions</Link>
+              <Link href="/route/transactions" className="text-blue-600 hover:text-blue-700 mt-4 block text-center">
+                <CustomeTable transactions={transactions} handleRowClick={() => { }} categoryColorMap={categoryColorMap} />
+                <div className="mt-4">
+                  View All Transactions
+                </div>
+              </Link>
             </div>
           </div>
         </section>
