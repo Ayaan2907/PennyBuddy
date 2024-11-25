@@ -1,9 +1,7 @@
 import Transactions from "@/app/components/Transactions/Transactions";
 
-const DashboardPage = () => {
-  return (
-        < Transactions /> 
-  )
+const TransactionsPage = () => {
+  return <Transactions  />;
 };
 
-export default DashboardPage;
+export default TransactionsPage;

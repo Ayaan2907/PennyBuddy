@@ -26,7 +26,7 @@ export const extractAccountsMetadata = (metadata: any) => {
     }
 };
 
-export const sendPlaidMetadataToBackend = async (metadata: any, userId:any | null, accessToken:any) => {
+export const sendPlaidMetadataToBackend = async (metadata: any, userId: any | null, accessToken: any) => {
     if (metadata.accounts && metadata.accounts.length > 0 && metadata.institution) {
         try {
             const response = await fetch("http://localhost:3003/plaid/transactions", {
@@ -34,7 +34,7 @@ export const sendPlaidMetadataToBackend = async (metadata: any, userId:any | nul
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({userId: userId, access_token:accessToken}),
+                body: JSON.stringify({ userId: userId, access_token: accessToken }),
             });
 
             if (!response.ok) {
@@ -53,4 +53,35 @@ export const sendPlaidMetadataToBackend = async (metadata: any, userId:any | nul
     }
 };
 
+export const fetchAccountTransactionsFromDB = async (userId: any) => {
+    try {
+        const userId = localStorage.getItem("userId");
+        const response = await fetch(`http://localhost:3003/plaid/gets-stored-transactions/${userId}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error("Error fetching transactions:", error);
+        throw error;
+    }
+}
 
+export const fetchAccountBalancesFromDB = async (userId: any) => {
+    try {
+        const response = await fetch(`http://localhost:3003//plaid/gets-balances/${userId}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        const data = await response.json();
+        return data.balances;
+    } catch (error) {
+        console.error("Error fetching account balances:", error);
+        throw error;
+    }
+}
