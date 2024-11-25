@@ -2,7 +2,7 @@
 import Link from "next/link";
 import Navbar from "../Navbar/Navbar";
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { TransactionDetailsModel } from "../UiModel/TransactionDetailsModel";
+import { UIModel } from "../UIModel/UIModel";
 import { fetchAccountTransactionsFromDB } from "@/app/services/plaidUtils";
 import { TransactionObject, getCategoryColorMap } from "@/app/models/transactionUtils";
 import CustomeTable from "@/app/components/Table/CustomeTable";
@@ -31,7 +31,7 @@ export default function Transactions() {
 				const transformedData = data.map((transaction: TransactionObject) => ({
 					...transaction,
 					amount: Number(transaction.amount),
-					category: transaction.category.split(/,\s*|\s*,\s*|\s*,/),
+					category: typeof transaction.category === 'string' ? transaction.category.split(/,\s*|\s*,\s*|\s*,/) : transaction.category,
 				}));
 				setTransactions(transformedData);
 				console.log("Fetched transactions:", transformedData);
@@ -259,7 +259,7 @@ export default function Transactions() {
 					</div>
 				</section>
 			</div>
-			{isModalOpen && < TransactionDetailsModel transaction={activeTransactionRow} onClose={closeModal} />}
+			{isModalOpen && < UIModel transaction={activeTransactionRow ?? undefined} onClose={closeModal} />}
 
 		</div>
 	);

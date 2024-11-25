@@ -3,7 +3,7 @@ export interface TransactionObject {
 	name: string;
 	amount: number;
 	authorized_date: string | null;
-	category: string;
+	category: string | string[];
 	category_id: string;
 	date: string;
 	logo_url: string | null;
@@ -54,3 +54,22 @@ export const getCategoryColorMap = (transactions: TransactionObject[]) => {
 		{} as Record<string, string>
 	);
 };
+
+
+export interface AccountBalance {
+	b_available_balance: string | null;
+	b_current_balance: string;
+	b_currency: string;
+	type: string;
+	subtype: string;
+	user_id: number;
+	user_name: string;
+	institution: string;
+	// account_id: string;
+}
+  
+export interface UIModelProps {
+	transaction?: TransactionObject;  // Transaction data
+	account?: AccountBalance;      // Account data
+	onClose: () => void;  // Function to close the modal
+}
