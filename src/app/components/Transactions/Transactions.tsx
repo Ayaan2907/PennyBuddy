@@ -8,6 +8,7 @@ import { TransactionObject, getCategoryColorMap } from "@/app/models/transaction
 import CustomeTable from "@/app/components/Table/CustomeTable";
 
 export default function Transactions() {
+	const [isOpen, setIsOpen] = useState(false);
 	const [transactions, setTransactions] = useState<TransactionObject[]>([]);
 	const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 	const [categoryColorMap, setCategoryColorMap] = useState<Record<string, string>>({});
@@ -77,6 +78,7 @@ export default function Transactions() {
 		setFilter((prevFilter) => ({ ...prevFilter, [name]: value }));
 	};
 
+
 	// Handle category selection for filtering
 	const handleCategorySelection = (category: string) => {
 		setSelectedCategories((prevCategories) =>
@@ -110,126 +112,99 @@ export default function Transactions() {
 
 	return (
 		<div className="bg-gray-50 min-h-screen">
-			<Navbar isOpen={true} toggle={() => false} />
+			<Navbar isOpen={isOpen} toggle={() => setIsOpen(!isOpen)} />
 
 			<div className="pt-10">
 				<section className="container mx-auto px-6 py-16 flex flex-col items-center">
-					<h1 className="text-5xl font-extrabold text-gray-900 mb-6">
-						Transactions
-					</h1>
-
-					{/* Filters Section */}
-					<div className="mb-6 flex flex-col sm:flex-row sm:justify-between w-full gap-4">
-						<div className="flex items-center space-x-4">
-							<span className="font-medium text-sm text-gray-800">
-								Transaction Type
-							</span>
-							<div className="flex space-x-2">
-								<label className="flex items-center space-x-2">
-									<input
-										type="radio"
-										name="type"
-										value="all"
-										checked={filter.type === "all"}
-										onChange={handleFilterChange}
-										className="peer hidden"
-									/>
-									<span className="px-3 py-1 rounded-full bg-gray-200 text-sm text-gray-800 peer-checked:bg-blue-500 peer-checked:text-white cursor-pointer">
-										All
-									</span>
-								</label>
-								<label className="flex items-center space-x-2">
-									<input
-										type="radio"
-										name="type"
-										value="credit"
-										checked={filter.type === "credit"}
-										onChange={handleFilterChange}
-										className="peer hidden"
-									/>
-									<span className="px-3 py-1 rounded-full bg-gray-200 text-sm text-gray-800 peer-checked:bg-green-500 peer-checked:text-white cursor-pointer">
-										Credit
-									</span>
-								</label>
-								<label className="flex items-center space-x-2">
-									<input
-										type="radio"
-										name="type"
-										value="debit"
-										checked={filter.type === "debit"}
-										onChange={handleFilterChange}
-										className="peer hidden"
-									/>
-									<span className="px-3 py-1 rounded-full bg-gray-200 text-sm text-gray-800 peer-checked:bg-red-500 peer-checked:text-white cursor-pointer">
-										Debit
-									</span>
-								</label>
-							</div>
-						</div>
-
-						{/* Date Sorting */}
-						<div className="flex items-center space-x-4">
-							<span className="font-medium text-sm text-gray-800">
-								Sort By Date
-							</span>
-							<div className="flex space-x-2">
-								<label className="flex items-center space-x-2">
-									<input
-										type="radio"
-										name="sortByDate"
-										value="asc"
-										checked={filter.sortByDate === "asc"}
-										onChange={handleFilterChange}
-										className="peer hidden"
-									/>
-									<span className="px-3 py-1 rounded-full bg-gray-200 text-sm text-gray-800 peer-checked:bg-blue-500 peer-checked:text-white cursor-pointer">
-										Ascending
-									</span>
-								</label>
-								<label className="flex items-center space-x-2">
-									<input
-										type="radio"
-										name="sortByDate"
-										value="desc"
-										checked={filter.sortByDate === "desc"}
-										onChange={handleFilterChange}
-										className="peer hidden"
-									/>
-									<span className="px-3 py-1 rounded-full bg-gray-200 text-sm text-gray-800 peer-checked:bg-indigo-500 peer-checked:text-white cursor-pointer">
-										Descending
-									</span>
-								</label>
-							</div>
-						</div>
-					</div>
+					<h1 className="text-5xl font-extrabold text-gray-900 mb-6">Transactions</h1>
 
 					{/* Category Filter Chips */}
-					<div className="flex flex-wrap gap-2 mb-4">
+					<div className="flex flex-wrap gap-2 mb-6">
 						{Object.keys(categoryColorMap).map((category) => (
 							<button
 								key={category}
-								onClick={() =>
-									handleCategorySelection(category)
-								}
-								className={`px-3 py-1 text-sm rounded-full border-2 ${selectedCategories.includes(category)
-									? "bg-gray-200 text-gray-800 border-gray-800 font-bold"
-									: `${categoryColorMap[category]} border-transparent`
+								onClick={() => handleCategorySelection(category)}
+								className={`px-3 py-1 text-sm rounded-full transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-md ${selectedCategories.includes(category)
+										? "bg-gray-800 text-white border-gray-800 font-bold"
+										: `${categoryColorMap[category]} border-transparent`
 									}`}
 							>
 								{category}
 							</button>
 						))}
 					</div>
+					<hr className="my-6 border-t border-gray-300 w-full" />
 
-					<CustomeTable transactions={currentPageTransactions} handleRowClick={handleRowClick} categoryColorMap={categoryColorMap} />
+					{/* Filters Section */}
+					<div className="mb-6 flex flex-col sm:flex-row sm:justify-between w-full gap-4">
+						<div className="flex items-center space-x-4">
+							<span className="font-medium text-sm text-gray-800">Transaction Type</span>
+							<div className="flex space-x-2">
+								{["all", "credit", "debit"].map((type) => (
+									<label key={type} className="flex items-center space-x-2">
+										<input
+											type="radio"
+											name="type"
+											value={type}
+											checked={filter.type === type}
+											onChange={handleFilterChange}
+											className="peer hidden"
+										/>
+										<span
+											className={`px-3 py-1 rounded-full bg-gray-200 text-sm text-gray-800 peer-checked:bg-${type === "all"
+													? "blue-500"
+													: type === "credit"
+														? "green-500"
+														: "red-500"
+												} peer-checked:text-white cursor-pointer`}
+										>
+											{type.charAt(0).toUpperCase() + type.slice(1)}
+										</span>
+									</label>
+								))}
+							</div>
+						</div>
+
+						{/* Date Sorting */}
+						<div className="flex items-center space-x-4">
+							<span className="font-medium text-sm text-gray-800">Sort By Date</span>
+							<div className="flex space-x-2">
+								{["asc", "desc"].map((sort) => (
+									<label key={sort} className="flex items-center space-x-2">
+										<input
+											type="radio"
+											name="sortByDate"
+											value={sort}
+											checked={filter.sortByDate === sort}
+											onChange={handleFilterChange}
+											className="peer hidden"
+										/>
+										<span
+											className={`px-3 py-1 rounded-full bg-gray-200 text-sm text-gray-800 peer-checked:bg-${sort === "asc" ? "blue-500" : "indigo-500"
+												} peer-checked:text-white cursor-pointer`}
+										>
+											{sort.charAt(0).toUpperCase() + sort.slice(1)}
+										</span>
+									</label>
+								))}
+							</div>
+						</div>
+					</div>
+
+					<CustomeTable
+						transactions={currentPageTransactions}
+						handleRowClick={handleRowClick}
+						categoryColorMap={categoryColorMap}
+					/>
 
 					{/* Pagination Controls */}
-					<div className="flex items-center justify-center mt-4 flex-wrap gap-2">
+					<div className="flex items-center justify-center mt-6 flex-wrap gap-2">
 						{/* Previous Page Button */}
 						<button
 							onClick={handlePrevPage}
 							disabled={currentPage === 1}
 							className="py-1 px-3 bg-blue-500 text-white text-sm rounded-md disabled:bg-gray-300"
+
 						>
 							Previous
 						</button>
@@ -240,9 +215,10 @@ export default function Transactions() {
 								key={index}
 								onClick={() => handlePageChange(index + 1)}
 								className={`py-1 px-3 text-sm rounded-md ${currentPage === index + 1
-									? "bg-blue-500 text-white"
-									: "bg-gray-200 text-gray-700"
+										? "bg-blue-500 text-white"
+										: "bg-gray-200 text-gray-700"
 									}`}
+
 							>
 								{index + 1}
 							</button>
@@ -253,14 +229,14 @@ export default function Transactions() {
 							onClick={handleNextPage}
 							disabled={currentPage === totalPages}
 							className="py-1 px-3 bg-blue-500 text-white text-sm rounded-md disabled:bg-gray-300"
+
 						>
 							Next
 						</button>
 					</div>
 				</section>
+				{isModalOpen && <UIModel transaction={activeTransactionRow ?? undefined} onClose={closeModal} />}
 			</div>
-			{isModalOpen && < UIModel transaction={activeTransactionRow ?? undefined} onClose={closeModal} />}
-
 		</div>
 	);
 }
