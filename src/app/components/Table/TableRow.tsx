@@ -25,9 +25,9 @@ const Row: React.FC<RowProps> = ({ transaction, handleRowClick, categoryColorMap
       <td className="px-6 py-4">{transaction.name}</td>
       <td className="px-6 py-4">${isNaN(transaction.amount) ? "0.00" : transaction.amount.toFixed(2)}</td>
       <td className="px-6 py-4">{transaction.transaction_type}</td>
-      <td className="px-6 py-4">{transaction.date}</td>
+      <td className="px-6 py-4">{transaction.authorized_date ? new Date(transaction.authorized_date).toISOString().split('T')[0] : "N/A"}</td>
       <td className="px-6 py-4">
-        {transaction.category.map((cat, index) => (
+        {Array.isArray(transaction.category) && transaction.category.map((cat: string, index: number) => (
           <span key={index} className={`inline-flex items-center px-3 py-1 mr-2 text-sm font-medium rounded-full ${categoryColorMap[cat]}`}>
             {cat}
           </span>

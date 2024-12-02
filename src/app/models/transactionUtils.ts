@@ -118,3 +118,31 @@ export interface PieChartProps {
 export interface BarChartProps {
 	accounts: AccountBalance[];
 }
+
+export interface PaginationProps {
+    currentPage: number;
+    totalPages: number;
+    onPageChange: (page: number) => void;
+    onNextPage: () => void;
+    onPrevPage: () => void;
+}
+
+export interface TransactionFiltersProps {
+	filter: {
+	  type: string;
+	  sortByDate: string;
+	};
+	setFilter: React.Dispatch<React.SetStateAction<{ type: string; sortByDate: string }>>;
+	startDate: Date | undefined;
+	endDate: Date | undefined;
+	setStartDate: React.Dispatch<React.SetStateAction<Date | undefined>>;
+	setEndDate: React.Dispatch<React.SetStateAction<Date | undefined>>;
+	selectedCategories: string[];
+	setSelectedCategories: React.Dispatch<React.SetStateAction<string[]>>;
+	categoryColorMap: { [key: string]: string };
+	searchTerm: string;
+	setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
+	isOpen: boolean;
+	toggleDropdown: (state: boolean) => void;
+  }
+  

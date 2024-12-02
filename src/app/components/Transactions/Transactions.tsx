@@ -1,11 +1,12 @@
 "use client";
-import Link from "next/link";
 import Navbar from "../Navbar/Navbar";
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { UIModel } from "../UIModel/UIModel";
 import { fetchAccountTransactionsFromDB } from "@/app/services/plaidUtils";
 import { TransactionObject, getCategoryColorMap } from "@/app/models/transactionUtils";
 import CustomeTable from "@/app/components/Table/CustomeTable";
+import TransactionFilters from "@/app/components/Filters/TransactionFilter";
+import Pagination from "@/app/components/Filters/Pagination";
 
 export default function Transactions() {
 	const [isOpen, setIsOpen] = useState(false);
@@ -19,6 +20,9 @@ export default function Transactions() {
 		type: "all",
 		sortByDate: "asc",
 	});
+	const [searchTerm, setSearchTerm] = useState("");
+	const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+	const [endDate, setEndDate] = useState<Date | undefined>(undefined);
 
 	const ITEMS_PER_PAGE = 10;
 
@@ -28,14 +32,14 @@ export default function Transactions() {
 			if (!userId) return;
 
 			try {
-				const data = await fetchAccountTransactionsFromDB(userId);
+				const data = await fetchAccountTransactionsFromDB(userId, startDate, endDate);
 				const transformedData = data.map((transaction: TransactionObject) => ({
 					...transaction,
 					amount: Number(transaction.amount),
 					category: typeof transaction.category === 'string' ? transaction.category.split(/,\s*|\s*,\s*|\s*,/) : transaction.category,
 				}));
 				setTransactions(transformedData);
-				console.log("Fetched transactions:", transformedData);
+				console.log("Fetched transactions");
 
 				const categoryMap = getCategoryColorMap(transformedData);
 				setCategoryColorMap(categoryMap);
@@ -43,10 +47,8 @@ export default function Transactions() {
 				console.error("Failed to fetch transactions:", error);
 			}
 		})();
+	}, [startDate, endDate]);
 
-	}, []);
-
-	// Memoize filtered transactions based on filter and selected categories
 	const filteredTransactions = useMemo(() => {
 		let filteredData = [...transactions];
 
@@ -63,30 +65,13 @@ export default function Transactions() {
 		}
 
 		filteredData.sort((a, b) => {
-			const dateA = new Date(a.date).getTime();
-			const dateB = new Date(b.date).getTime();
+			const dateA = new Date(a.authorized_date || a.date).getTime();
+			const dateB = new Date(b.authorized_date || b.date).getTime();
 			return filter.sortByDate === "asc" ? dateA - dateB : dateB - dateA;
 		});
 
 		return filteredData;
 	}, [transactions, filter, selectedCategories]);
-
-
-	// Handle filter change
-	const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const { name, value } = e.target;
-		setFilter((prevFilter) => ({ ...prevFilter, [name]: value }));
-	};
-
-
-	// Handle category selection for filtering
-	const handleCategorySelection = (category: string) => {
-		setSelectedCategories((prevCategories) =>
-			prevCategories.includes(category)
-				? prevCategories.filter((cat) => cat !== category)
-				: [...prevCategories, category]
-		);
-	};
 
 	const totalPages = Math.ceil(filteredTransactions.length / ITEMS_PER_PAGE);
 	const currentPageTransactions = useMemo(
@@ -94,7 +79,6 @@ export default function Transactions() {
 		[filteredTransactions, currentPage]
 	);
 
-	// Pagination handlers
 	const handlePageChange = (page: number) => setCurrentPage(page);
 	const handleNextPage = () => currentPage < totalPages && setCurrentPage(currentPage + 1);
 	const handlePrevPage = () => currentPage > 1 && setCurrentPage(currentPage - 1);
@@ -109,6 +93,7 @@ export default function Transactions() {
 		setActiveTransactionRow(null);
 	};
 
+	const toggleDropdown = (state: any) => setIsOpen(state);
 
 	return (
 		<div className="bg-gray-50 min-h-screen">
@@ -116,80 +101,25 @@ export default function Transactions() {
 
 			<div className="pt-10">
 				<section className="container mx-auto px-6 py-16 flex flex-col items-center">
-					<h1 className="text-5xl font-extrabold text-gray-900 mb-6">Transactions</h1>
-
-					{/* Category Filter Chips */}
-					<div className="flex flex-wrap gap-2 mb-6">
-						{Object.keys(categoryColorMap).map((category) => (
-							<button
-								key={category}
-								onClick={() => handleCategorySelection(category)}
-								className={`px-3 py-1 text-sm rounded-full transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-md ${selectedCategories.includes(category)
-										? "bg-gray-800 text-white border-gray-800 font-bold"
-										: `${categoryColorMap[category]} border-transparent`
-									}`}
-							>
-								{category}
-							</button>
-						))}
-					</div>
-					<hr className="my-6 border-t border-gray-300 w-full" />
+					<h1 className="text-3xl font-bold text-gray-900 mb-2">Transactions</h1>
+					<hr className="my-6 border-t border-gray-300 w-2/5" />
 
 					{/* Filters Section */}
-					<div className="mb-6 flex flex-col sm:flex-row sm:justify-between w-full gap-4">
-						<div className="flex items-center space-x-4">
-							<span className="font-medium text-sm text-gray-800">Transaction Type</span>
-							<div className="flex space-x-2">
-								{["all", "credit", "debit"].map((type) => (
-									<label key={type} className="flex items-center space-x-2">
-										<input
-											type="radio"
-											name="type"
-											value={type}
-											checked={filter.type === type}
-											onChange={handleFilterChange}
-											className="peer hidden"
-										/>
-										<span
-											className={`px-3 py-1 rounded-full bg-gray-200 text-sm text-gray-800 peer-checked:bg-${type === "all"
-													? "blue-500"
-													: type === "credit"
-														? "green-500"
-														: "red-500"
-												} peer-checked:text-white cursor-pointer`}
-										>
-											{type.charAt(0).toUpperCase() + type.slice(1)}
-										</span>
-									</label>
-								))}
-							</div>
-						</div>
-
-						{/* Date Sorting */}
-						<div className="flex items-center space-x-4">
-							<span className="font-medium text-sm text-gray-800">Sort By Date</span>
-							<div className="flex space-x-2">
-								{["asc", "desc"].map((sort) => (
-									<label key={sort} className="flex items-center space-x-2">
-										<input
-											type="radio"
-											name="sortByDate"
-											value={sort}
-											checked={filter.sortByDate === sort}
-											onChange={handleFilterChange}
-											className="peer hidden"
-										/>
-										<span
-											className={`px-3 py-1 rounded-full bg-gray-200 text-sm text-gray-800 peer-checked:bg-${sort === "asc" ? "blue-500" : "indigo-500"
-												} peer-checked:text-white cursor-pointer`}
-										>
-											{sort.charAt(0).toUpperCase() + sort.slice(1)}
-										</span>
-									</label>
-								))}
-							</div>
-						</div>
-					</div>
+					<TransactionFilters
+						filter={filter}
+						setFilter={setFilter}
+						startDate={startDate ?? undefined}
+						endDate={endDate ?? undefined}
+						setStartDate={setStartDate}
+						setEndDate={setEndDate}
+						selectedCategories={selectedCategories}
+						setSelectedCategories={setSelectedCategories}
+						categoryColorMap={categoryColorMap}
+						searchTerm={searchTerm}
+						setSearchTerm={setSearchTerm}
+						isOpen={isOpen}
+						toggleDropdown={toggleDropdown}
+					/>
 
 					<CustomeTable
 						transactions={currentPageTransactions}
@@ -198,42 +128,13 @@ export default function Transactions() {
 					/>
 
 					{/* Pagination Controls */}
-					<div className="flex items-center justify-center mt-6 flex-wrap gap-2">
-						{/* Previous Page Button */}
-						<button
-							onClick={handlePrevPage}
-							disabled={currentPage === 1}
-							className="py-1 px-3 bg-blue-500 text-white text-sm rounded-md disabled:bg-gray-300"
-
-						>
-							Previous
-						</button>
-
-						{/* Page Number Buttons */}
-						{[...Array(totalPages)].map((_, index) => (
-							<button
-								key={index}
-								onClick={() => handlePageChange(index + 1)}
-								className={`py-1 px-3 text-sm rounded-md ${currentPage === index + 1
-										? "bg-blue-500 text-white"
-										: "bg-gray-200 text-gray-700"
-									}`}
-
-							>
-								{index + 1}
-							</button>
-						))}
-
-						{/* Next Page Button */}
-						<button
-							onClick={handleNextPage}
-							disabled={currentPage === totalPages}
-							className="py-1 px-3 bg-blue-500 text-white text-sm rounded-md disabled:bg-gray-300"
-
-						>
-							Next
-						</button>
-					</div>
+					<Pagination
+						currentPage={currentPage}
+						totalPages={totalPages}
+						onPageChange={handlePageChange}
+						onNextPage={handleNextPage}
+						onPrevPage={handlePrevPage}
+					/>
 				</section>
 				{isModalOpen && <UIModel transaction={activeTransactionRow ?? undefined} onClose={closeModal} />}
 			</div>

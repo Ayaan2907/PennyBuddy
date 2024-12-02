@@ -1,6 +1,7 @@
+const API_URL = "http://localhost:3003";
 export const exchangePlaidToken = async (publicToken: string) => {
     try {
-        const response = await fetch("http://localhost:3003/plaid/exchange-token", {
+        const response = await fetch(`${API_URL}/plaid/exchange-token`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ public_token: publicToken }),
@@ -29,7 +30,7 @@ export const extractAccountsMetadata = (metadata: any) => {
 export const sendPlaidMetadataToBackend = async (metadata: any, userId: any | null, accessToken: any) => {
     if (metadata.accounts && metadata.accounts.length > 0 && metadata.institution) {
         try {
-            const response = await fetch("http://localhost:3003/plaid/transactions", {
+            const response = await fetch(`${API_URL}/plaid/transactions`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -53,10 +54,10 @@ export const sendPlaidMetadataToBackend = async (metadata: any, userId: any | nu
     }
 };
 
-export const fetchAccountTransactionsFromDB = async (userId: any) => {
+export const fetchAccountTransactionsFromDB = async (userId: any, startDate: any, endDate: any) => {
     try {
-        const userId = localStorage.getItem("userId");
-        const response = await fetch(`http://localhost:3003/plaid/gets-stored-transactions/${userId}`, {
+        // const response = await fetch(`http://localhost:3003/plaid/gets-stored-transactions/${userId}?start_date=${startDate}&end_date=${endDate}`, {
+        const response = await fetch(`${API_URL}/plaid/gets-stored-transactions/${userId}?start_date=${startDate}&end_date=${endDate}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -72,7 +73,7 @@ export const fetchAccountTransactionsFromDB = async (userId: any) => {
 
 export const fetchAccountBalancesFromDB = async (userId: any) => {
     try {
-        const response = await fetch(`http://localhost:3003/plaid/gets-balances/${userId}`, {
+        const response = await fetch(`${API_URL}/plaid/gets-balances/${userId}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
