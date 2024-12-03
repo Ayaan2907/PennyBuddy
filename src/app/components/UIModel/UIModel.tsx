@@ -13,12 +13,6 @@ export const UIModel = ({ transaction, account, onClose }: UIModelProps) => {
 				{/* Modal Header */}
 				<div className="flex items-center justify-between border-b border-gray-300 pb-4 mb-4">
 					<div className="flex items-center space-x-4">
-						{/* Display logo from transaction or account */}
-						<img
-							src={transaction?.logo_url || transaction?.personal_finance_category_icon_url || "/default-logo.png"} 
-							alt="Logo"
-							className="w-12 h-12 rounded-full"
-						/>
 						<h2 className="text-2xl font-semibold text-blue-600">{transaction ? "Transaction Details" : "Account Details"}</h2>
 					</div>
 					<button
@@ -44,7 +38,6 @@ export const UIModel = ({ transaction, account, onClose }: UIModelProps) => {
 											${transaction.amount}
 										</span>
 									</p>
-									<p><strong>Date:</strong> {formatValue(transaction.date)}</p>
 									<p><strong>Transaction Type:</strong> {formatValue(transaction.transaction_type)}</p>
 								</div>
 							</div>
@@ -54,7 +47,7 @@ export const UIModel = ({ transaction, account, onClose }: UIModelProps) => {
 								<h3 className="text-xl font-semibold text-blue-600">Details</h3>
 								<div className="space-y-3">
 									<p><strong>Categories:</strong> {transaction.category}</p>
-									<p><strong>Authorized Date:</strong> {formatValue(transaction.authorized_date)}</p>
+									<p><strong>Authorized Date:</strong> {transaction.authorized_date ? new Date(transaction.authorized_date).toISOString().split('T')[0] : "N/A"}</p>
 									<p><strong>Payment Channel:</strong> {formatValue(transaction.payment_channel)}</p>
 								</div>
 							</div>

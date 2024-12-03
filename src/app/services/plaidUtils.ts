@@ -54,10 +54,9 @@ export const sendPlaidMetadataToBackend = async (metadata: any, userId: any | nu
     }
 };
 
-export const fetchAccountTransactionsFromDB = async (userId: any, startDate?: any, endDate?: any) => {
+export const fetchAccountTransactionsFromDB = async (userId: any) => {
     try {
-        // const response = await fetch(`http://localhost:3003/plaid/gets-stored-transactions/${userId}?start_date=${startDate}&end_date=${endDate}`, {
-        const response = await fetch(`${API_URL}/plaid/gets-stored-transactions/${userId}?start_date=${startDate}&end_date=${endDate}`, {
+        const response = await fetch(`${API_URL}/plaid/gets-stored-transactions/${userId}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",

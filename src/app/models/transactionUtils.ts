@@ -2,17 +2,12 @@ export interface TransactionObject {
 	account_id: string;
 	name: string;
 	amount: number;
-	authorized_date: string | null;
+	authorized_date: string | Date | number ;
 	category: string | string[];
 	category_id: string;
-	date: string;
-	logo_url: string | null;
 	merchant_entity_id: string;
 	merchant_name: string;
 	payment_channel: string;
-	pending: boolean;
-	pending_transaction_id: string | null;
-	personal_finance_category_icon_url: string;
 	transaction_id: string;
 	transaction_type: string;
 }
@@ -99,7 +94,7 @@ export interface AccountBalance {
 	user_id: number;
 	user_name: string;
 	institution: string;
-	// account_id: string;
+	account_id: string;
 }
 
 export interface UIModelProps {
@@ -133,10 +128,6 @@ export interface TransactionFiltersProps {
 	  sortByDate: string;
 	};
 	setFilter: React.Dispatch<React.SetStateAction<{ type: string; sortByDate: string }>>;
-	startDate: Date | undefined;
-	endDate: Date | undefined;
-	setStartDate: React.Dispatch<React.SetStateAction<Date | undefined>>;
-	setEndDate: React.Dispatch<React.SetStateAction<Date | undefined>>;
 	selectedCategories: string[];
 	setSelectedCategories: React.Dispatch<React.SetStateAction<string[]>>;
 	categoryColorMap: { [key: string]: string };

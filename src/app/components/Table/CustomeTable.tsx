@@ -24,9 +24,10 @@ const CustomeTable: React.FC<TableProps> = ({ transactions, handleRowClick, cate
             </tr>
         </thead>
         <tbody>
-          {transactions.map((transaction) => (
+          {transactions.map((transaction, index) => (
             <TableRow
               key={transaction.transaction_id}
+              index={index}
               transaction={transaction}
               handleRowClick={handleRowClick}
               categoryColorMap={categoryColorMap}

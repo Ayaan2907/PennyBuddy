@@ -21,18 +21,16 @@ export default function Transactions() {
 		sortByDate: "asc",
 	});
 	const [searchTerm, setSearchTerm] = useState("");
-	const [startDate, setStartDate] = useState<Date | undefined>(undefined);
-	const [endDate, setEndDate] = useState<Date | undefined>(undefined);
 
 	const ITEMS_PER_PAGE = 10;
 
 	useEffect(() => {
 		(async () => {
-			const userId = localStorage.getItem("userId");
+			const userId = typeof window !== "undefined" ? localStorage.getItem("userId") : null;
 			if (!userId) return;
 
 			try {
-				const data = await fetchAccountTransactionsFromDB(userId, startDate, endDate);
+				const data = await fetchAccountTransactionsFromDB(userId);
 				const transformedData = data.map((transaction: TransactionObject) => ({
 					...transaction,
 					amount: Number(transaction.amount),
@@ -47,7 +45,7 @@ export default function Transactions() {
 				console.error("Failed to fetch transactions:", error);
 			}
 		})();
-	}, [startDate, endDate]);
+	}, []);
 
 	const filteredTransactions = useMemo(() => {
 		let filteredData = [...transactions];
@@ -65,8 +63,8 @@ export default function Transactions() {
 		}
 
 		filteredData.sort((a, b) => {
-			const dateA = new Date(a.authorized_date || a.date).getTime();
-			const dateB = new Date(b.authorized_date || b.date).getTime();
+			const dateA = new Date(a.authorized_date).getTime();
+			const dateB = new Date(b.authorized_date).getTime();
 			return filter.sortByDate === "asc" ? dateA - dateB : dateB - dateA;
 		});
 
@@ -108,10 +106,6 @@ export default function Transactions() {
 					<TransactionFilters
 						filter={filter}
 						setFilter={setFilter}
-						startDate={startDate ?? undefined}
-						endDate={endDate ?? undefined}
-						setStartDate={setStartDate}
-						setEndDate={setEndDate}
 						selectedCategories={selectedCategories}
 						setSelectedCategories={setSelectedCategories}
 						categoryColorMap={categoryColorMap}

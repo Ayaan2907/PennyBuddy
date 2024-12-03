@@ -6,10 +6,6 @@ import { TransactionFiltersProps } from "@/app/models/transactionUtils";
 export default function TransactionFilters({
   filter,
   setFilter,
-  startDate,
-  endDate,
-  setStartDate,
-  setEndDate,
   selectedCategories,
   setSelectedCategories,
   categoryColorMap,
@@ -21,12 +17,6 @@ export default function TransactionFilters({
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFilter((prevFilter) => ({ ...prevFilter, [name]: value }));
-  };
-
-  const handleDateRangeChange = (dates: [Date | null, Date | null]) => {
-    const [start, end] = dates;
-    setStartDate(start ?? undefined);
-    setEndDate(end ?? undefined);
   };
 
   const handleCategorySelection = (category: string) => {
@@ -109,22 +99,6 @@ export default function TransactionFilters({
               </div>
             </div>
           </CategoryDropDown>
-        </div>
-
-        {/* Date Range Picker */}
-        <div className="flex flex-col mb-4 sm:mb-0">
-          <h3 className="font-semibold text-lg text-gray-800 mb-2">
-            Date Range
-          </h3>
-          <DatePicker
-            selected={startDate}
-            onChange={handleDateRangeChange}
-            startDate={startDate}
-            endDate={endDate}
-            selectsRange
-            isClearable
-            className="px-4 py-2 border rounded-md w-full sm:w-auto text-black"
-          />
         </div>
 
         {/* Date Sorting */}
