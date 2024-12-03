@@ -2,7 +2,7 @@ import { usePlaidLink, PlaidLinkOnExit } from 'react-plaid-link';
 import { exchangePlaidToken, extractAccountsMetadata, sendPlaidMetadataToBackend } from '../services/plaidUtils';
 
 export const usePlaidLinkHandler = (linkToken: string | null) => {
-  const userId = localStorage.getItem('userId');
+  const userId = typeof window !== 'undefined' ? localStorage.getItem('userId') : null;
   const { open, ready } = usePlaidLink({
     token: linkToken,
     onSuccess: async (publicToken, metadata) => {
