@@ -19,8 +19,9 @@ export default function Navbar({ isOpen, toggle }: { isOpen: boolean; toggle: ()
         console.error('Error fetching link token:', error);
       }
     };
-
-    fetchLinkToken();
+    if (typeof window !== 'undefined') {
+      fetchLinkToken();
+    }
   }, []);
 
   const handleAddAccount = () => {

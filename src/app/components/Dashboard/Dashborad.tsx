@@ -23,33 +23,34 @@ export default function Dashboard() {
 
 
   useEffect(() => {
-    const userId = localStorage.getItem('userId');
-    if (!userId) return;
-    (async () => {
+    const fetchData = async () => {
       try {
-        const userId = localStorage.getItem("userId");
-        if (!userId) return;
+      const userId = localStorage.getItem("userId");
+      if (!userId) return;
 
-        const balances = await fetchAccountBalancesFromDB(userId);
-        setAccounts(balances);
-        console.log("Fetched balances on dashboard", balances);
+      const balances = await fetchAccountBalancesFromDB(userId);
+      setAccounts(balances);
+      console.log("Fetched balances on dashboard", balances);
 
-        const data = await fetchAccountTransactionsFromDB(userId);
-        const transformedData = data.map((transaction: TransactionObject) => ({
-          ...transaction,
-          amount: Number(transaction.amount),
-          category: typeof transaction.category === 'string' ? transaction.category.split(/,\s*|\s*,\s*|\s*,/) : transaction.category,
-        }));
-        setTransactions(transformedData);
-        console.log("Fetched transactions on dashboard");
+      const data = await fetchAccountTransactionsFromDB(userId);
+      const transformedData = data.map((transaction: TransactionObject) => ({
+        ...transaction,
+        amount: Number(transaction.amount),
+        category: typeof transaction.category === 'string' ? transaction.category.split(/,\s*|\s*,\s*|\s*,/) : transaction.category,
+      }));
+      setTransactions(transformedData);
+      console.log("Fetched transactions on dashboard");
 
-        const categoryMap = getCategoryColorMap(transformedData);
-        setCategoryColorMap(categoryMap);
+      const categoryMap = getCategoryColorMap(transformedData);
+      setCategoryColorMap(categoryMap);
       } catch (error) {
-        console.error("Error fetching data for dashboard:", error);
+      console.error("Error fetching data for dashboard:", error);
       }
-    })();
+    };
 
+    if (typeof window !== 'undefined') {
+      fetchData();
+    }
   }, []);
 
   return (
@@ -108,7 +109,7 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {accounts.map((account) => (
                 <div
-                  key={account.user_id + account.subtype + account.b_current_balance + account.b_available_balance}
+                  key={account.account_id}
                   className="bg-gradient-to-br from-blue-50 to-white p-6 rounded-2xl shadow-xl hover:scale-105 transition-transform duration-300 ease-in-out flex flex-col justify-between transform hover:shadow-2xl"
                   onClick={() => openAccountModal(account)}
                 >
