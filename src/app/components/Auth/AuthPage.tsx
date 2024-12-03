@@ -32,10 +32,12 @@ export default function AuthPage({ isLogin: initialIsLogin }: AuthPageProps) {
       if (isLoggedIn) {
         const response = await loginUser({ email: formData.email, password: formData.password });
         if (response.accessToken) {
-          localStorage.setItem("plaidAccessToken",response.plaidAccessToken);
-          localStorage.setItem("userId",response.id);
-          login();
-          router.push("/route/dashboard");
+            if (typeof window !== "undefined") {
+            localStorage.setItem("plaidAccessToken", response.plaidAccessToken);
+            localStorage.setItem("userId", response.id);
+            login();
+            router.push("/route/dashboard");
+            }
         } else {
           setError("Invalid credentials.");
         }
