@@ -74,6 +74,11 @@ export default function Navbar({ isOpen, toggle }: { isOpen: boolean; toggle: ()
             </Link>
           </li>
           <li>
+            <Link href="/route/payment" className="hover:text-gray-400">
+            Payment
+            </Link>
+          </li>
+          <li>
             <Link href="/">
               <button
                 onClick={handleLogout}

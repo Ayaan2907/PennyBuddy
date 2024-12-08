@@ -18,7 +18,7 @@ export default function Transactions() {
 	const [activeTransactionRow, setActiveTransactionRow] = useState<TransactionObject | null>(null);
 	const [filter, setFilter] = useState({
 		type: "all",
-		sortByDate: "asc",
+		sortByDate: "desc",
 	});
 	const [searchTerm, setSearchTerm] = useState("");
 
@@ -38,7 +38,6 @@ export default function Transactions() {
 				}));
 				setTransactions(transformedData);
 				console.log("Fetched transactions");
-
 				const categoryMap = getCategoryColorMap(transformedData);
 				setCategoryColorMap(categoryMap);
 			} catch (error) {

@@ -107,9 +107,9 @@ export default function Dashboard() {
               Connected Accounts
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {accounts.map((account) => (
+              {accounts.map((account, index) => (
                 <div
-                  key={account.account_id}
+                  key={account.account_id || index}
                   className="bg-gradient-to-br from-blue-50 to-white p-6 rounded-2xl shadow-xl hover:scale-105 transition-transform duration-300 ease-in-out flex flex-col justify-between transform hover:shadow-2xl"
                   onClick={() => openAccountModal(account)}
                 >
