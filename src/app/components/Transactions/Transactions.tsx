@@ -2,11 +2,11 @@
 import Navbar from "../Navbar/Navbar";
 import { useState, useEffect, useMemo } from "react";
 import { UIModel } from "../UIModel/UIModel";
-import { fetchAccountTransactionsFromDB } from "@/app/services/plaidUtils";
 import { TransactionObject, getCategoryColorMap } from "@/app/models/transactionUtils";
 import CustomeTable from "@/app/components/Table/CustomeTable";
 import TransactionFilters from "@/app/components/Filters/TransactionFilter";
 import Pagination from "@/app/components/Filters/Pagination";
+import { PlaidAPIProxy } from '@/app/services/PlaidAPIProxy';
 
 export default function Transactions() {
 	const [isOpen, setIsOpen] = useState(false);
@@ -21,7 +21,7 @@ export default function Transactions() {
 		sortByDate: "desc",
 	});
 	const [searchTerm, setSearchTerm] = useState("");
-
+	const plaidProxy = new PlaidAPIProxy();
 	const ITEMS_PER_PAGE = 10;
 
 	useEffect(() => {
@@ -30,15 +30,10 @@ export default function Transactions() {
 			if (!userId) return;
 
 			try {
-				const data = await fetchAccountTransactionsFromDB(userId);
-				const transformedData = data.map((transaction: TransactionObject) => ({
-					...transaction,
-					amount: Number(transaction.amount),
-					category: typeof transaction.category === 'string' ? transaction.category.split(/,\s*|\s*,\s*|\s*,/) : transaction.category,
-				}));
-				setTransactions(transformedData);
+				const data = await plaidProxy.fetchTransactions(userId);
+				setTransactions(data);
 				console.log("Fetched transactions");
-				const categoryMap = getCategoryColorMap(transformedData);
+				const categoryMap = getCategoryColorMap(data);
 				setCategoryColorMap(categoryMap);
 			} catch (error) {
 				console.error("Failed to fetch transactions:", error);

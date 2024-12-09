@@ -1,8 +1,8 @@
-const API_URL = "http://localhost:3003";
+import config from "../../../config";
 
 export const fetchAccountsFromDB = async (userId: any) => {
     try {   
-        const response = await fetch(`${API_URL}/accounts/user/${userId}`, {
+        const response = await fetch(`${config.API_URL}/accounts/user/${userId}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",

@@ -1,12 +1,9 @@
-// src/services/authService.ts
 import axios from 'axios';
-
-
-const API_URL = 'http://localhost:3003/auth';
+import config from "../../../config";
 
 export const registerUser = async (userData: any) => {
   try {
-    const response = await axios.post(`${API_URL}/register`, userData);
+    const response = await axios.post(`${config.API_URL}/auth/register`, userData);
     return response.data;
   } catch (error : any) {
     throw new Error(error.response?.data?.message || 'Error registering user');
@@ -15,7 +12,7 @@ export const registerUser = async (userData: any) => {
 
 export const loginUser = async (loginData: any) => {
   try {
-    const response = await axios.post(`${API_URL}/login`, loginData);
+    const response = await axios.post(`${config.API_URL}/auth/login`, loginData);
     return response.data;
   } catch (error : any) {
     throw new Error(error.response?.data?.message || 'Error logging in');
