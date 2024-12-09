@@ -3,8 +3,8 @@ export const initialFormData = {
     lastName: '',
     address: '',
     city: '',
-    state: '',
-    postalCode: '',
+    states: '',
+    zipcode: '',
     ssn: '',
     email: '',
     password: ''

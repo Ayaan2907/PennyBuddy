@@ -95,10 +95,10 @@ export default function AuthPage({ isLogin: initialIsLogin }: AuthPageProps) {
                   {renderInputField("Address", "address")}
                   <div className="flex space-x-4">
                     {renderInputField("City", "city")}
-                    {renderInputField("State", "state", "text", false)}
+                    {renderInputField("State", "states", "text", false)}
                   </div>
                   <div className="flex space-x-4">
-                    {renderInputField("Postal Code", "postalCode", "text", false)}
+                    {renderInputField("Zip Code", "zipcode", "text", false)}
                     {renderInputField("SSN", "ssn", "text", false)}
                   </div>
                 </>
