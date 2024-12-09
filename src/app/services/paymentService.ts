@@ -1,8 +1,8 @@
-const API_URL = "http://localhost:3003";
+import config from "../../../config";
 
 export const paymentService = async (payload: any) => {
     try {   
-        const response = await fetch(`${API_URL}/transactions/create`, {
+        const response = await fetch(`${config.API_URL}/transactions/create`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
